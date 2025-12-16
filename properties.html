@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Warehouse Properties - DEL Properties</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-content">
+                <div class="logo">
+                    <h1>DEL Properties</h1>
+                    <span class="tagline">Warehouse Transit Buyers</span>
+                </div>
+                <ul class="nav-links">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="properties.html" class="active">Properties</a></li>
+                    <li><a href="index.html#about">About</a></li>
+                    <li><a href="index.html#contact">Contact</a></li>
+                </ul>
+                <button class="mobile-menu-toggle" id="mobileMenuToggle">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Properties Header -->
+    <section class="properties-header">
+        <div class="container">
+            <h1>Warehouse Properties</h1>
+            <p>Browse our complete catalog of available warehouse properties</p>
+        </div>
+    </section>
+
+    <!-- Filters and Search -->
+    <section class="filters-section">
+        <div class="container">
+            <div class="filters-container">
+                <div class="search-bar">
+                    <input type="text" placeholder="Search properties..." id="propertySearch">
+                    <button class="search-icon-btn">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <path d="m21 21-4.35-4.35"></path>
+                        </svg>
+                    </button>
+                </div>
+                <div class="filters">
+                    <select id="filterLocation">
+                        <option value="">All Locations</option>
+                        <option value="New York">New York</option>
+                        <option value="Los Angeles">Los Angeles</option>
+                        <option value="Chicago">Chicago</option>
+                        <option value="Houston">Houston</option>
+                        <option value="Miami">Miami</option>
+                    </select>
+                    <select id="filterSize">
+                        <option value="">All Sizes</option>
+                        <option value="small">Small (< 10,000 sq ft)</option>
+                        <option value="medium">Medium (10,000 - 50,000 sq ft)</option>
+                        <option value="large">Large (50,000 - 100,000 sq ft)</option>
+                        <option value="xlarge">Extra Large (> 100,000 sq ft)</option>
+                    </select>
+                    <select id="filterType">
+                        <option value="">All Types</option>
+                        <option value="distribution">Distribution Center</option>
+                        <option value="storage">Storage Facility</option>
+                        <option value="manufacturing">Manufacturing</option>
+                        <option value="cold-storage">Cold Storage</option>
+                    </select>
+                    <select id="filterPrice">
+                        <option value="">All Prices</option>
+                        <option value="low">Under $500K</option>
+                        <option value="medium">$500K - $2M</option>
+                        <option value="high">$2M - $5M</option>
+                        <option value="premium">Over $5M</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Properties Grid -->
+    <section class="properties-listing">
+        <div class="container">
+            <div class="properties-header-bar">
+                <p class="results-count" id="resultsCount">Showing <span id="count">0</span> properties</p>
+                <div class="sort-options">
+                    <label>Sort by:</label>
+                    <select id="sortBy">
+                        <option value="newest">Newest First</option>
+                        <option value="price-low">Price: Low to High</option>
+                        <option value="price-high">Price: High to Low</option>
+                        <option value="size">Size: Largest First</option>
+                    </select>
+                </div>
+            </div>
+            <div class="properties-grid" id="propertiesGrid">
+                <!-- Properties will be loaded dynamically -->
+            </div>
+            <div class="pagination" id="pagination">
+                <!-- Pagination will be added dynamically -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>DEL Properties</h3>
+                    <p>Your trusted partner in warehouse property transactions.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="properties.html">Properties</a></li>
+                        <li><a href="index.html#about">About</a></li>
+                        <li><a href="index.html#contact">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Services</h4>
+                    <ul>
+                        <li><a href="#">Property Search</a></li>
+                        <li><a href="#">Market Analysis</a></li>
+                        <li><a href="#">Investment Consulting</a></li>
+                        <li><a href="#">Transit Services</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Connect</h4>
+                    <div class="social-links">
+                        <a href="#">LinkedIn</a>
+                        <a href="#">Twitter</a>
+                        <a href="#">Facebook</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 DEL Properties. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
+
