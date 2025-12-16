@@ -79,6 +79,38 @@ The main color scheme can be changed by modifying the CSS variables in `styles.c
 - Property images use emoji placeholders (replace with actual images)
 - All property data is stored in the JavaScript file (consider using a database for production)
 
+## GitHub Setup
+
+To push this project to GitHub:
+
+### Option 1: Using GitHub Web Interface (Easiest)
+1. Go to https://github.com/new
+2. Create a new repository named `dels` (or your preferred name)
+3. **Don't** initialize with README, .gitignore, or license
+4. Run these commands:
+   ```bash
+   git remote add origin https://github.com/YOUR_USERNAME/dels.git
+   git push -u origin feature/enhanced-property-listings
+   ```
+
+### Option 2: Using GitHub CLI
+```bash
+# Install GitHub CLI (if not installed)
+brew install gh
+
+# Authenticate
+gh auth login
+
+# Create repository and push
+gh repo create dels --public --source=. --remote=origin --push
+```
+
+### Option 3: Using Setup Script
+Run the provided setup script:
+```bash
+./setup-github.sh
+```
+
 ## License
 
 This project is created for DEL Properties warehouse transit buyer platform.
