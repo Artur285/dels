@@ -1068,6 +1068,7 @@ body {
     transition: all 0.3s;
     background: var(--bg-light);
     font-weight: 500;
+    position: relative;
 }
 
 .search-bar input:focus {
@@ -1075,6 +1076,15 @@ body {
     border-color: var(--primary-color);
     background: white;
     box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+    transform: translateY(-1px);
+}
+
+.search-bar input::placeholder {
+    transition: opacity 0.3s;
+}
+
+.search-bar input:focus::placeholder {
+    opacity: 0.6;
 }
 
 .search-bar input::placeholder {

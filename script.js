@@ -152,20 +152,60 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeScrollAnimations();
     initializeParallax();
     
+    // Setup hero search on homepage
+    setupHeroSearch();
+    
     if (document.getElementById('featuredProperties')) {
         loadFeaturedProperties();
     }
     
     if (document.getElementById('propertiesGrid')) {
-        loadAllProperties();
         setupFilters();
         setupSorting();
+        checkUrlSearchParam(); // Check for search parameter from homepage
+        // Load properties if no search param or after applying search
+        if (!window.location.search.includes('search=')) {
+            loadAllProperties();
+        }
     }
     
     if (document.getElementById('contactForm')) {
         setupContactForm();
     }
 });
+
+// Setup hero search functionality
+function setupHeroSearch() {
+    const heroSearch = document.getElementById('heroSearch');
+    const heroSearchBtn = document.querySelector('.hero-search .search-btn');
+    
+    if (heroSearch) {
+        // Allow Enter key to search
+        heroSearch.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                performHeroSearch();
+            }
+        });
+    }
+    
+    if (heroSearchBtn) {
+        heroSearchBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            performHeroSearch();
+        });
+    }
+}
+
+// Perform search from hero section
+function performHeroSearch() {
+    const searchTerm = document.getElementById('heroSearch')?.value.trim();
+    if (searchTerm) {
+        // Navigate to properties page with search parameter
+        window.location.href = `properties.html?search=${encodeURIComponent(searchTerm)}`;
+    } else {
+        window.location.href = 'properties.html';
+    }
+}
 
 // Scroll-triggered animations using Intersection Observer
 function initializeScrollAnimations() {
@@ -396,27 +436,57 @@ function setupFilters() {
     const sizeFilter = document.getElementById('filterSize');
     const typeFilter = document.getElementById('filterType');
     const priceFilter = document.getElementById('filterPrice');
+    const searchIconBtn = document.querySelector('.search-icon-btn');
     
+    // Add event listeners for real-time search
     [searchInput, locationFilter, sizeFilter, typeFilter, priceFilter].forEach(element => {
         if (element) {
             element.addEventListener('change', applyFilters);
             element.addEventListener('input', applyFilters);
         }
     });
+    
+    // Add Enter key support for search input
+    if (searchInput) {
+        searchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                applyFilters();
+            }
+        });
+    }
+    
+    // Add click handler for search button
+    if (searchIconBtn) {
+        searchIconBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            applyFilters();
+        });
+    }
 }
 
 // Apply filters
 function applyFilters() {
-    const searchTerm = document.getElementById('propertySearch')?.value.toLowerCase() || '';
+    const searchTerm = document.getElementById('propertySearch')?.value.toLowerCase().trim() || '';
     const location = document.getElementById('filterLocation')?.value || '';
     const size = document.getElementById('filterSize')?.value || '';
     const type = document.getElementById('filterType')?.value || '';
     const price = document.getElementById('filterPrice')?.value || '';
     
     filteredProperties = propertiesData.filter(property => {
-        const matchesSearch = !searchTerm || 
-            property.title.toLowerCase().includes(searchTerm) ||
-            property.location.toLowerCase().includes(searchTerm);
+        // Enhanced search - searches in multiple fields
+        let matchesSearch = true;
+        if (searchTerm) {
+            const searchFields = [
+                property.title.toLowerCase(),
+                property.location.toLowerCase(),
+                property.type.toLowerCase(),
+                property.size.toLowerCase(),
+                property.price.toLowerCase(),
+                ...property.features.map(f => f.toLowerCase())
+            ].join(' ');
+            matchesSearch = searchFields.includes(searchTerm);
+        }
         
         const matchesLocation = !location || property.location.includes(location);
         
