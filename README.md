@@ -25,10 +25,52 @@ dels/
 
 ## Getting Started
 
-1. Open `index.html` in a web browser
-2. Navigate through the site using the navigation menu
-3. Use the search and filters on the properties page to find warehouses
-4. Click on any property card to view details
+### Quick Start (Recommended)
+
+**Start the web server:**
+```bash
+./start-server-background.sh
+```
+
+Then open your browser and visit:
+- **Homepage**: http://localhost:8000/index.html
+- **Properties Page**: http://localhost:8000/properties.html
+
+**Stop the server:**
+```bash
+./stop-server.sh
+```
+
+### Alternative Methods
+
+**Run server in foreground:**
+```bash
+./start-server.sh
+```
+
+**Run server with auto-restart (keeps running):**
+```bash
+./keep-server-running.sh
+```
+
+### Manual Start
+```bash
+python3 -m http.server 8000
+```
+
+### Server Management Scripts
+
+- `start-server.sh` - Start server in foreground
+- `start-server-background.sh` - Start server in background
+- `stop-server.sh` - Stop the running server
+- `keep-server-running.sh` - Start server with auto-restart on crash
+
+### Using the Site
+
+1. Navigate through the site using the navigation menu
+2. Use the search and filters on the properties page to find warehouses
+3. Click on any property card to view details
+4. Search works across all property fields (title, location, type, size, price, features)
 
 ## Features Overview
 
