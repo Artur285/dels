@@ -672,7 +672,7 @@ function initializeAIChatbot() {
         });
     }
     
-    // Remove notification badge after first interaction
+    // Add pulse animation to notification badge to attract attention
     setTimeout(() => {
         const badge = document.querySelector('.ai-notification-badge');
         if (badge && !chatbotOpen) {
@@ -841,8 +841,9 @@ function generateAIResponse(message) {
     // Large/size queries
     if (lowerMessage.includes('large') || lowerMessage.includes('big') || lowerMessage.includes('size')) {
         const large = propertiesData.filter(p => {
+            if (!p.size) return false;
             const size = parseInt(p.size.replace(/[^0-9]/g, ''));
-            return size >= 100000;
+            return !isNaN(size) && size >= 100000;
         });
         return `<p>I found <strong>${large.length} extra-large warehouses</strong> (100,000+ sq ft):</p>
                 <ul class="ai-property-list">
