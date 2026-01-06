@@ -172,6 +172,9 @@ document.addEventListener('DOMContentLoaded', function() {
     if (document.getElementById('contactForm')) {
         setupContactForm();
     }
+    
+    // Initialize AI chatbot
+    initializeAIChatbot();
 });
 
 // Setup hero search functionality
@@ -633,4 +636,331 @@ function setupContactForm() {
 function capitalizeFirst(str) {
     return str.charAt(0).toUpperCase() + str.slice(1).replace('-', ' ');
 }
+
+// ============================================
+// AI Chatbot Functionality
+// ============================================
+
+let chatHistory = [];
+let chatbotOpen = false;
+
+// Initialize AI Chatbot
+function initializeAIChatbot() {
+    const chatButton = document.getElementById('aiChatButton');
+    const chatContainer = document.getElementById('aiChatContainer');
+    const chatClose = document.getElementById('aiChatClose');
+    const chatInput = document.getElementById('aiChatInput');
+    const chatSend = document.getElementById('aiChatSend');
+    
+    if (chatButton) {
+        chatButton.addEventListener('click', toggleChatbot);
+    }
+    
+    if (chatClose) {
+        chatClose.addEventListener('click', toggleChatbot);
+    }
+    
+    if (chatSend) {
+        chatSend.addEventListener('click', sendMessage);
+    }
+    
+    if (chatInput) {
+        chatInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+    }
+    
+    // Add pulse animation to notification badge to attract attention
+    setTimeout(() => {
+        const badge = document.querySelector('.ai-notification-badge');
+        if (badge && !chatbotOpen) {
+            badge.style.animation = 'pulse 2s infinite';
+        }
+    }, 2000);
+}
+
+// Toggle chatbot open/close
+function toggleChatbot() {
+    const chatButton = document.getElementById('aiChatButton');
+    const chatContainer = document.getElementById('aiChatContainer');
+    const badge = document.querySelector('.ai-notification-badge');
+    
+    chatbotOpen = !chatbotOpen;
+    
+    if (chatbotOpen) {
+        chatContainer.classList.add('active');
+        chatButton.style.transform = 'scale(0)';
+        if (badge) {
+            badge.style.display = 'none';
+        }
+        // Focus on input
+        setTimeout(() => {
+            document.getElementById('aiChatInput')?.focus();
+        }, 300);
+    } else {
+        chatContainer.classList.remove('active');
+        chatButton.style.transform = 'scale(1)';
+    }
+}
+
+// Send message from user
+function sendMessage() {
+    const input = document.getElementById('aiChatInput');
+    const message = input.value.trim();
+    
+    if (!message) return;
+    
+    // Add user message to chat
+    addMessageToChat(message, 'user');
+    
+    // Clear input
+    input.value = '';
+    
+    // Hide quick actions after first message
+    const quickActions = document.getElementById('aiQuickActions');
+    if (quickActions && quickActions.style.display !== 'none') {
+        quickActions.style.display = 'none';
+    }
+    
+    // Show typing indicator
+    showTypingIndicator();
+    
+    // Process message and generate AI response
+    setTimeout(() => {
+        hideTypingIndicator();
+        const response = generateAIResponse(message);
+        addMessageToChat(response, 'ai');
+    }, 1000 + Math.random() * 1000);
+}
+
+// Send quick message
+function sendQuickMessage(message) {
+    const input = document.getElementById('aiChatInput');
+    input.value = message;
+    sendMessage();
+}
+
+// Add message to chat
+function addMessageToChat(message, sender) {
+    const messagesContainer = document.getElementById('aiChatMessages');
+    const messageDiv = document.createElement('div');
+    messageDiv.className = sender === 'user' ? 'user-message' : 'ai-message';
+    
+    if (sender === 'user') {
+        messageDiv.innerHTML = `
+            <div class="user-message-content">
+                <p>${escapeHtml(message)}</p>
+            </div>
+            <div class="user-message-avatar">👤</div>
+        `;
+    } else {
+        messageDiv.innerHTML = `
+            <div class="ai-message-avatar">🤖</div>
+            <div class="ai-message-content">
+                ${message}
+            </div>
+        `;
+    }
+    
+    messagesContainer.appendChild(messageDiv);
+    
+    // Scroll to bottom
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    
+    // Add to history
+    chatHistory.push({ message, sender, timestamp: new Date() });
+}
+
+// Show typing indicator
+function showTypingIndicator() {
+    const messagesContainer = document.getElementById('aiChatMessages');
+    const typingDiv = document.createElement('div');
+    typingDiv.className = 'ai-message typing-indicator';
+    typingDiv.id = 'typingIndicator';
+    typingDiv.innerHTML = `
+        <div class="ai-message-avatar">🤖</div>
+        <div class="ai-message-content">
+            <div class="typing-dots">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    `;
+    messagesContainer.appendChild(typingDiv);
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+}
+
+// Hide typing indicator
+function hideTypingIndicator() {
+    const indicator = document.getElementById('typingIndicator');
+    if (indicator) {
+        indicator.remove();
+    }
+}
+
+// Generate AI response based on user message
+function generateAIResponse(message) {
+    const lowerMessage = message.toLowerCase();
+    
+    // Greetings
+    if (lowerMessage.match(/^(hi|hello|hey|greetings)/)) {
+        return '<p>Hello! How can I assist you with finding the perfect warehouse property today?</p>';
+    }
+    
+    // Available properties
+    if (lowerMessage.includes('available') || lowerMessage.includes('show me')) {
+        const available = propertiesData.filter(p => p.status === 'available');
+        return `<p>We currently have <strong>${available.length} available properties</strong>! Here are some highlights:</p>
+                <ul class="ai-property-list">
+                    ${available.slice(0, 3).map(p => `
+                        <li>
+                            <strong>${p.title}</strong> - ${p.location}<br>
+                            ${p.size} | ${p.price}
+                            <button class="ai-view-property" onclick="window.location.href='properties.html'">View Details</button>
+                        </li>
+                    `).join('')}
+                </ul>
+                <p><a href="properties.html" class="ai-link">View all available properties →</a></p>`;
+    }
+    
+    // Property types
+    if (lowerMessage.includes('type') || lowerMessage.includes('kind')) {
+        return `<p>We offer several types of warehouse properties:</p>
+                <ul>
+                    <li><strong>Distribution Centers</strong> - Perfect for logistics and shipping operations</li>
+                    <li><strong>Storage Facilities</strong> - Ideal for long-term bulk storage needs</li>
+                    <li><strong>Manufacturing Warehouses</strong> - Equipped for production activities</li>
+                    <li><strong>Cold Storage</strong> - Climate-controlled for temperature-sensitive goods</li>
+                </ul>
+                <p>Which type interests you most?</p>`;
+    }
+    
+    // Large/size queries
+    if (lowerMessage.includes('large') || lowerMessage.includes('big') || lowerMessage.includes('size')) {
+        const large = propertiesData.filter(p => {
+            if (!p.size) return false;
+            const size = parseInt(p.size.replace(/[^0-9]/g, ''));
+            return !isNaN(size) && size >= 100000;
+        });
+        return `<p>I found <strong>${large.length} extra-large warehouses</strong> (100,000+ sq ft):</p>
+                <ul class="ai-property-list">
+                    ${large.slice(0, 3).map(p => `
+                        <li>
+                            <strong>${p.title}</strong><br>
+                            📍 ${p.location} | 📐 ${p.size} | 💰 ${p.price}
+                        </li>
+                    `).join('')}
+                </ul>
+                <p><a href="properties.html?filterSize=xlarge" class="ai-link">See all large warehouses →</a></p>`;
+    }
+    
+    // Distribution center
+    if (lowerMessage.includes('distribution')) {
+        const distribution = propertiesData.filter(p => p.type === 'distribution');
+        return `<p>We have <strong>${distribution.length} distribution centers</strong> available:</p>
+                <ul class="ai-property-list">
+                    ${distribution.slice(0, 3).map(p => `
+                        <li>
+                            <strong>${p.title}</strong><br>
+                            📍 ${p.location} | 📐 ${p.size} | 💰 ${p.price}
+                        </li>
+                    `).join('')}
+                </ul>
+                <p><a href="properties.html?filterType=distribution" class="ai-link">Browse all distribution centers →</a></p>`;
+    }
+    
+    // Location queries
+    if (lowerMessage.includes('location') || lowerMessage.includes('where') || lowerMessage.includes('new york') || lowerMessage.includes('california') || lowerMessage.includes('chicago')) {
+        const locations = [...new Set(propertiesData.map(p => p.location))];
+        return `<p>Our warehouse properties are located in major commercial hubs:</p>
+                <ul>
+                    ${locations.map(loc => `<li>${loc}</li>`).join('')}
+                </ul>
+                <p>Which location are you interested in?</p>`;
+    }
+    
+    // Price queries
+    if (lowerMessage.includes('price') || lowerMessage.includes('cost') || lowerMessage.includes('budget')) {
+        return `<p>Our properties range from <strong>$1.6M to $8.2M</strong>. We can help you find warehouses within your budget:</p>
+                <ul>
+                    <li>Under $2M - Flex spaces and smaller facilities</li>
+                    <li>$2M - $5M - Medium-sized distribution and storage</li>
+                    <li>Over $5M - Large-scale logistics hubs</li>
+                </ul>
+                <p>What's your budget range?</p>`;
+    }
+    
+    // Features
+    if (lowerMessage.includes('feature') || lowerMessage.includes('amenities') || lowerMessage.includes('facilities')) {
+        return `<p>Our warehouses offer various premium features:</p>
+                <ul>
+                    <li>🚛 Loading Docks & Rail Access</li>
+                    <li>❄️ Climate Control & Refrigeration</li>
+                    <li>🔒 Advanced Security Systems</li>
+                    <li>🏢 Office Spaces</li>
+                    <li>⚡ Heavy Power & Crane Systems</li>
+                    <li>🤖 Automation Ready Infrastructure</li>
+                </ul>
+                <p>What features are most important to you?</p>`;
+    }
+    
+    // Contact
+    if (lowerMessage.includes('contact') || lowerMessage.includes('call') || lowerMessage.includes('email')) {
+        return `<p>I'd be happy to connect you with our team!</p>
+                <ul>
+                    <li>📞 <strong>Phone:</strong> +1 (555) 123-4567</li>
+                    <li>✉️ <strong>Email:</strong> info@delproperties.com</li>
+                    <li>📍 <strong>Address:</strong> 123 Commerce Street, Industrial District</li>
+                </ul>
+                <p>You can also fill out our <a href="index.html#contact" class="ai-link">contact form</a> and we'll get back to you within 24 hours.</p>`;
+    }
+    
+    // Investment/buy
+    if (lowerMessage.includes('invest') || lowerMessage.includes('buy') || lowerMessage.includes('purchase')) {
+        return `<p>Great! Investing in warehouse properties is a smart move. Here's how we can help:</p>
+                <ol>
+                    <li><strong>Property Selection</strong> - Browse our available listings</li>
+                    <li><strong>Market Analysis</strong> - Get detailed analytics and ROI projections</li>
+                    <li><strong>Site Visits</strong> - Schedule tours of properties you're interested in</li>
+                    <li><strong>Transaction Support</strong> - We handle all documentation and logistics</li>
+                </ol>
+                <p>Would you like to schedule a consultation with one of our investment advisors?</p>`;
+    }
+    
+    // Default response with suggestions
+    return `<p>I'm here to help! I can assist you with:</p>
+            <ul>
+                <li>Finding available warehouse properties</li>
+                <li>Filtering by size, type, location, or price</li>
+                <li>Providing detailed property information</li>
+                <li>Answering questions about features and amenities</li>
+                <li>Connecting you with our sales team</li>
+            </ul>
+            <p>What would you like to know more about?</p>`;
+}
+
+// Escape HTML to prevent XSS
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+// Check URL search parameter (for hero search)
+function checkUrlSearchParam() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const searchTerm = urlParams.get('search');
+    
+    if (searchTerm) {
+        const searchInput = document.getElementById('propertySearch');
+        if (searchInput) {
+            searchInput.value = searchTerm;
+            applyFilters();
+        }
+    }
+}
+
 

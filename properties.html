@@ -154,6 +154,49 @@
         </div>
     </footer>
 
+    <!-- AI Chat Assistant -->
+    <div class="ai-chat-container" id="aiChatContainer">
+        <div class="ai-chat-header">
+            <div class="ai-chat-header-info">
+                <div class="ai-avatar">🤖</div>
+                <div>
+                    <h4>DEL AI Assistant</h4>
+                    <span class="ai-status">Online</span>
+                </div>
+            </div>
+            <button class="ai-chat-close" id="aiChatClose">✕</button>
+        </div>
+        <div class="ai-chat-messages" id="aiChatMessages">
+            <div class="ai-message">
+                <div class="ai-message-avatar">🤖</div>
+                <div class="ai-message-content">
+                    <p>Hello! I'm the DEL AI Assistant. I can help you find warehouse properties, answer questions about our listings, and provide recommendations based on your needs. How can I assist you today?</p>
+                </div>
+            </div>
+        </div>
+        <div class="ai-quick-actions" id="aiQuickActions">
+            <button class="ai-quick-btn" onclick="sendQuickMessage('Show me available properties')">Available Properties</button>
+            <button class="ai-quick-btn" onclick="sendQuickMessage('What types of warehouses do you have?')">Property Types</button>
+            <button class="ai-quick-btn" onclick="sendQuickMessage('I need a large distribution center')">Large Warehouses</button>
+        </div>
+        <div class="ai-chat-input-container">
+            <input type="text" class="ai-chat-input" id="aiChatInput" placeholder="Type your message...">
+            <button class="ai-chat-send" id="aiChatSend">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="22" y1="2" x2="11" y2="13"></line>
+                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <button class="ai-chat-button" id="aiChatButton">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+        </svg>
+        <span class="ai-notification-badge">1</span>
+    </button>
+
     <script src="script.js"></script>
 </body>
 </html>
