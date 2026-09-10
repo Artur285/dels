@@ -1,5 +1,14 @@
-// Sample warehouse properties data
-const propertiesData = [
+// ============================================
+// PROPERTY DATA MANAGEMENT SYSTEM
+// ============================================
+
+/**
+ * Property Data Store - Centralized property management
+ * This provides a sustainable way to access and manage property data
+ */
+const PropertyStore = {
+    // Main data array
+    data: [
     {
         id: 1,
         title: "Modern Distribution Center",
@@ -144,7 +153,76 @@ const propertiesData = [
         year: 2022,
         features: ["Urban Location", "Small Vehicle Access", "Sortation"]
     }
-];
+    ],
+
+    // Get all properties
+    getAll() {
+        return [...this.data];
+    },
+
+    // Get property by ID
+    getById(id) {
+        return this.data.find(property => property.id === id);
+    },
+
+    // Get featured properties (first N)
+    getFeatured(count = 6) {
+        return this.data.slice(0, count);
+    },
+
+    // Filter properties by criteria
+    filter(criteria = {}) {
+        return this.data.filter(property => {
+            if (criteria.status && property.status !== criteria.status) return false;
+            if (criteria.type && property.type !== criteria.type) return false;
+            if (criteria.location && !property.location.includes(criteria.location)) return false;
+            if (criteria.minPrice) {
+                const price = parseFloat(property.price.replace(/[^0-9.]/g, ''));
+                if (price < criteria.minPrice) return false;
+            }
+            if (criteria.maxPrice) {
+                const price = parseFloat(property.price.replace(/[^0-9.]/g, ''));
+                if (price > criteria.maxPrice) return false;
+            }
+            return true;
+        });
+    },
+
+    // Search properties by keyword
+    search(keyword) {
+        if (!keyword) return this.getAll();
+        const searchTerm = keyword.toLowerCase().trim();
+        return this.data.filter(property => {
+            const searchFields = [
+                property.title,
+                property.location,
+                property.type,
+                property.size,
+                property.price,
+                ...property.features
+            ].join(' ').toLowerCase();
+            return searchFields.includes(searchTerm);
+        });
+    },
+
+    // Get unique locations
+    getLocations() {
+        return [...new Set(this.data.map(p => p.location))];
+    },
+
+    // Get unique types
+    getTypes() {
+        return [...new Set(this.data.map(p => p.type))];
+    },
+
+    // Get properties by status
+    getByStatus(status) {
+        return this.data.filter(p => p.status === status);
+    }
+};
+
+// Backward compatibility - maintain existing reference
+const propertiesData = PropertyStore.data;
 
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', function() {
@@ -318,7 +396,7 @@ function initializeNavigation() {
 // Load featured properties on homepage
 function loadFeaturedProperties() {
     const container = document.getElementById('featuredProperties');
-    const featured = propertiesData.slice(0, 6);
+    const featured = PropertyStore.getFeatured(6);
     
     container.innerHTML = featured.map(property => createPropertyCard(property)).join('');
     
@@ -329,7 +407,7 @@ function loadFeaturedProperties() {
 }
 
 // Load all properties on properties page
-let filteredProperties = [...propertiesData];
+let filteredProperties = PropertyStore.getAll();
 let currentPage = 1;
 const itemsPerPage = 9;
 
@@ -422,7 +500,7 @@ function createPropertyCard(property) {
 
 // View property details
 function viewProperty(id) {
-    const property = propertiesData.find(p => p.id === id);
+    const property = PropertyStore.getById(id);
     if (property) {
         // In a real application, this would navigate to a detail page
         alert(`Property: ${property.title}\n\nLocation: ${property.location}\nSize: ${property.size}\nPrice: ${property.price}\n\nFeatures:\n${property.features.join('\n')}\n\nStatus: ${property.status}`);
@@ -473,30 +551,22 @@ function applyFilters() {
     const type = document.getElementById('filterType')?.value || '';
     const price = document.getElementById('filterPrice')?.value || '';
     
-    filteredProperties = propertiesData.filter(property => {
-        // Enhanced search - searches in multiple fields
-        let matchesSearch = true;
-        if (searchTerm) {
-            const searchFields = [
-                property.title.toLowerCase(),
-                property.location.toLowerCase(),
-                property.type.toLowerCase(),
-                property.size.toLowerCase(),
-                property.price.toLowerCase(),
-                ...property.features.map(f => f.toLowerCase())
-            ].join(' ');
-            matchesSearch = searchFields.includes(searchTerm);
-        }
-        
+    // Use PropertyStore for sustainable filtering
+    let results = PropertyStore.getAll();
+    
+    // Apply search first
+    if (searchTerm) {
+        results = PropertyStore.search(searchTerm);
+    }
+    
+    // Apply additional filters
+    filteredProperties = results.filter(property => {
         const matchesLocation = !location || property.location.includes(location);
-        
         const matchesType = !type || property.type === type;
-        
         const matchesSize = !size || checkSizeMatch(property.size, size);
-        
         const matchesPrice = !price || checkPriceMatch(property.price, price);
         
-        return matchesSearch && matchesLocation && matchesType && matchesSize && matchesPrice;
+        return matchesLocation && matchesType && matchesSize && matchesPrice;
     });
     
     currentPage = 1;
