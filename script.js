@@ -240,9 +240,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (document.getElementById('propertiesGrid')) {
         setupFilters();
         setupSorting();
-        checkUrlSearchParam(); // Check for search parameter from homepage
-        // Load properties if no search param or after applying search
-        if (!window.location.search.includes('search=')) {
+        if (!applySearchFromUrl()) {
             loadAllProperties();
         }
     }
@@ -541,6 +539,19 @@ function setupFilters() {
             applyFilters();
         });
     }
+}
+
+function applySearchFromUrl() {
+    const searchTerm = new URLSearchParams(window.location.search).get('search');
+    if (!searchTerm) {
+        return false;
+    }
+    const searchInput = document.getElementById('propertySearch');
+    if (searchInput) {
+        searchInput.value = searchTerm;
+    }
+    applyFilters();
+    return true;
 }
 
 // Apply filters
