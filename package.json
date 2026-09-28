@@ -1,0 +1,9 @@
+{
+  "name": "dels-static-site",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Static property listing site served by Node.js",
+  "scripts": {
+    "start": "node server.js"
+  }
+}
